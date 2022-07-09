@@ -7,6 +7,24 @@ def synthesize(fft, peaks, count):
         data[peaks[i]] = fft[peaks[i]]
     return np.fft.irfft(data)
 
+def synthesize_v2(fft, peaks, fs):
+    count = fft.size * 2
+
+    peaks = peaks[0:min(peaks.size, 32)]
+
+    freqs = (peaks / (fft.size)) * fs
+    amps = abs(fft[peaks])
+    angs = np.angle(fft[peaks])
+
+    sine = np.zeros(count)
+    t = np.arange(0, count/fs, 1/fs)
+    for i in range(0, peaks.size):
+        sine += amps[i] * np.cos(2 * np.pi * freqs[i] * t + angs[i])
+
+    sine = normalize(sine)
+
+    return sine
+
 
 def envelop(data):
     N = 442
@@ -15,18 +33,13 @@ def envelop(data):
     h = np.ones(K) * 1 / N
     return np.convolve(abs(data), h)
 
-    # w = np.pi / 1000
-    # #h = []
-    # n = np.arange(0, 1, 0.0001)
-    # h = np.arange(0, 1, 0.0001)
-    # # n = np.arange(0, N)
-    # # h = np.arange(0, N)
-    #
-    # h = 1/N * np.sin(n * K/2) / np.sin(n/2) * 1/2
-    # h[0] = 1 + 1/K
 
-    # for n in range(0, length, ):
-    #     if n == 0:
-    #         h.append(0)
-    #     else:
-    #         h.append(1/N * np.sin(n * K/2) / np.sin(n/2))
+def normalize(data):
+    max_amp = data[0]
+
+    for i in range(0, data.size):
+        if data[i] > max_amp:
+            max_amp = data[i]
+
+    data /= max_amp
+    return data

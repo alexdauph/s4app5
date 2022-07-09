@@ -53,30 +53,32 @@ from synthesize import *
 
 
 
+data, Fs = sf.read('note_guitare_LAd.wav')
+print("data.size = " + str(data.size))
 
+env = envelop(data)
+plt.subplot(3, 1, 1)
+plt.plot(data)
 
-# data, Fs = sf.read('note_guitare_LAd.wav')
-# print("data.size = " + str(data.size))
-#
-# data = abs(data)
-# plt.subplot(4, 1, 1)
-# plt.plot(data)
-#
-# # data_fft = np.fft.fft(data)
-# # plt.subplot(4, 1, 2)
-# # plt.plot(data_fft)
-#
-# env = envelop(data)
-# plt.subplot(4, 1, 2)
-# plt.plot(env)
-#
-# # filtered = np.convolve(data, env)
-# # plt.subplot(4, 1, 3)
-# # plt.plot(abs(filtered))
-#
-# # conv = np.convolve(env, data_fft)
-# # plt.subplot(4, 1, 4)
-# # plt.plot(conv)
-#
-# plt.show()
-#
+data_windowed = data * np.hanning(data.size)
+fft = np.fft.fft(data_windowed)
+fft = 2 * fft[0:int(fft.size / 2)]
+peaks, properties = find_peaks(fft, distance=500, prominence=8)
+print("peaks.size = " + str(peaks.size))
+
+plt.subplot(3, 1, 2)
+plt.plot(20 * np.log10(abs(fft)))
+plt.plot(peaks, 20 * np.log10(fft[peaks]), "x")
+
+# --- Synthesize new signal
+Z = synthesize(fft, peaks, 32)
+bb = synthesize_v2(fft, peaks, Fs)
+Z *= env[0:Z.size] * 10
+bb *= env[0:bb.size]
+plt.subplot(3, 1, 3)
+plt.plot(bb)
+
+sf.write("bb.wav", data=bb.real, samplerate=Fs)
+sf.write("note_LA_synthetise.wav", data=Z.real, samplerate=Fs)
+plt.show()
+
