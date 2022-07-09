@@ -19,13 +19,19 @@ from synthesize import *
 #
 # # --- Filter sound
 # data_filtered = np.convolve(data, h)
+# data_filtered = data_filtered[2000:134000]
+#
+# # --- Get envelop
+# env = envelop(data_filtered)
 #
 # # --- Get FFT
-# X = np.fft.fft(data_filtered)
+# data_filtered_windowed = data_filtered * np.hanning(data_filtered.size)
+# X = np.fft.fft(data_filtered_windowed)
 # X = 2 * X[0:int(X.size/2)]
 #
 # # --- Find peaks
-# peaks, properties = find_peaks(X, distance=150, prominence=10)
+# peaks, properties = find_peaks(X, distance=150, prominence=5)
+# print("peaks.size = " + str(peaks.size))
 #
 # # --- Synthesize new signal
 # Z = synthesize(X, peaks, 32)
@@ -34,14 +40,15 @@ from synthesize import *
 # plt.subplot(2, 1, 1)
 # plt.plot(20 * np.log10(abs(X)))
 # plt.plot(peaks, 20 * np.log10(X[peaks]), "x")
-# # Z *= np.hanning(Z.size)
+#
+# Z = Z * env[0:Z.size]
 # plt.subplot(2, 1, 2)
 # plt.plot(Z)
 #
 # plt.show()
 #
 # sf.write("note_basson_filtre.wav", data=data_filtered.real, samplerate=Fs)
-# sf.write("test.wav", data=Z.real, samplerate=Fs)
+# sf.write("note_basson_synthetise.wav", data=Z.real, samplerate=Fs)
 
 
 

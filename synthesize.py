@@ -13,7 +13,7 @@ def envelop(data):
     K = 885
 
     h = np.ones(K) * 1 / N
-    return np.convolve(data, h)
+    return np.convolve(abs(data), h)
 
     # w = np.pi / 1000
     # #h = []
