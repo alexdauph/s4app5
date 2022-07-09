@@ -24,3 +24,6 @@ def fir_band_stop_filter(fc, fs, order, low_pass_filter):
         band_stop_filter.append(d[n] - 2 * low_pass_filter[n] * np.cos(2 * np.pi * 1000/fs * n))
 
     return band_stop_filter
+
+
+
