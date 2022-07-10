@@ -1,34 +1,41 @@
 import numpy as np
+from scipy.signal import find_peaks
 
 
-def synthesize(fft, peaks, count):
-    data = np.zeros(fft.size)
-    for i in range(0, min(peaks.size, count)):
-        data[peaks[i]] = fft[peaks[i]]
-    return np.fft.irfft(data)
+def extract_params(data, fs, dist, prom):
+    peaks, properties = find_peaks(data, distance=dist, prominence=prom)
+    count = min(peaks.size, 32)
+    peaks = peaks[0:count]
+    params = [[0 for i in range(3)] for j in range(count)]
 
-def synthesize_v2(fft, peaks, fs):
-    count = fft.size * 2
+    for i in range(0, count):
+        params[i][0] = (peaks[i] / data.size) * fs
+        params[i][1] = abs(data[peaks[i]])
+        params[i][2] = np.angle(data[peaks[i]])
 
-    peaks = peaks[0:min(peaks.size, 32)]
+    return params
 
-    freqs = (peaks / (fft.size)) * fs
-    amps = abs(fft[peaks])
-    angs = np.angle(fft[peaks])
 
-    sine = np.zeros(count)
-    t = np.arange(0, count/fs, 1/fs)
-    for i in range(0, peaks.size):
-        sine += amps[i] * np.cos(2 * np.pi * freqs[i] * t + angs[i])
+# def synthesize(fft, peaks, count):
+#     data = np.zeros(fft.size)
+#     for i in range(0, min(peaks.size, count)):
+#         data[peaks[i]] = fft[peaks[i]]
+#     return np.fft.irfft(data)
 
-    sine = normalize(sine)
 
-    return sine
+def synthesize(params, size, fs):
+    signal = np.zeros(size)
+    t = np.arange(0, size/fs, 1/fs)
+
+    for i in range(0, len(params)):
+        signal += params[i][1] * np.cos(2 * np.pi * params[i][0] * t + params[i][2])
+
+    return normalize(signal)
 
 
 def envelop(data):
     N = 442
-    K = 885
+    K = 2 * N + 1
 
     h = np.ones(K) * 1 / N
     return np.convolve(abs(data), h)
