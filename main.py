@@ -36,8 +36,8 @@ env_note_basson = envelop(note_basson)
 # ######################
 
 # --- Apply window
-note_guitare_LA = note_guitare_LA * np.hanning(note_guitare_LA.size)
-note_basson = note_basson * np.hanning(note_basson.size)
+note_guitare_LA *= np.hanning(note_guitare_LA.size)
+note_basson *= np.hanning(note_basson.size)
 
 # --- Get fft
 fft_note_LA = np.fft.fft(note_guitare_LA)
@@ -93,28 +93,32 @@ synth_note_MI *= env_note_LA[0:synth_note_MI.size]
 synth_note_FA *= env_note_LA[0:synth_note_FA.size]
 synth_note_SOL *= env_note_LA[0:synth_note_SOL.size]
 synth_note_basson *= env_note_basson[0:synth_note_basson.size]
-######################
-plt.subplot(2, 1, 1)
-plt.plot(synth_note_LA)
-plt.subplot(2, 1, 2)
-plt.plot(synth_note_basson)
-plt.show()
-######################
+# ######################
+# plt.subplot(2, 1, 1)
+# plt.plot(synth_note_LA)
+# plt.subplot(2, 1, 2)
+# plt.plot(synth_note_basson)
+# plt.show()
+# ######################
 
 # --- Generate Beethoven
-beg = 6800
-div = 10
-bet = synth_note_SOL[beg:int(synth_note_SOL.size/div)]
-bet = np.concatenate([bet, synth_note_SOL[beg:int(synth_note_SOL.size/div)]])
-bet = np.concatenate([bet, synth_note_SOL[beg:int(synth_note_SOL.size/div)]])
-bet = np.concatenate([bet, synth_note_MI[beg:int(synth_note_MI.size/1.25)]])
-bet = np.concatenate([bet, synth_note_FA[beg:int(synth_note_FA.size/div)]])
-bet = np.concatenate([bet, synth_note_FA[beg:int(synth_note_FA.size/div)]])
-bet = np.concatenate([bet, synth_note_FA[beg:int(synth_note_FA.size/div)]])
-bet = np.concatenate([bet, synth_note_RE[beg:int(synth_note_RE.size/1.25)]])
+beg = 8250
+div = 9
+beethoven = synth_note_SOL[beg:int(synth_note_SOL.size/div)]
+beethoven = np.concatenate([beethoven, synth_note_SOL[beg:int(synth_note_SOL.size/div)]])
+beethoven = np.concatenate([beethoven, synth_note_SOL[beg:int(synth_note_SOL.size/div)]])
+beethoven = np.concatenate([beethoven, synth_note_MI[beg:int(synth_note_MI.size/1.25)]])
+beethoven = np.concatenate([beethoven, synth_note_FA[beg:int(synth_note_FA.size/div)]])
+beethoven = np.concatenate([beethoven, synth_note_FA[beg:int(synth_note_FA.size/div)]])
+beethoven = np.concatenate([beethoven, synth_note_FA[beg:int(synth_note_FA.size/div)]])
+beethoven = np.concatenate([beethoven, synth_note_RE[beg:int(synth_note_RE.size/1.25)]])
+# ######################
+# plt.plot(beethoven)
+# plt.show()
+# ######################
 
 # --- Create audio files
-sf.write("bet.wav", data=bet.real, samplerate=fs)
+sf.write("beethoven.wav", data=beethoven.real, samplerate=fs)
 sf.write("synth_note_LA.wav", data=synth_note_LA.real, samplerate=fs)
 sf.write("synth_note_RE.wav", data=synth_note_RE.real, samplerate=fs)
 sf.write("synth_note_MI.wav", data=synth_note_MI.real, samplerate=fs)
