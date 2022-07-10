@@ -16,13 +16,6 @@ def extract_params(data, fs, dist, prom):
     return params
 
 
-# def synthesize(fft, peaks, count):
-#     data = np.zeros(fft.size)
-#     for i in range(0, min(peaks.size, count)):
-#         data[peaks[i]] = fft[peaks[i]]
-#     return np.fft.irfft(data)
-
-
 def synthesize(params, size, fs):
     signal = np.zeros(size)
     t = np.arange(0, size/fs, 1/fs)
@@ -50,3 +43,14 @@ def normalize(data):
 
     data /= max_amp
     return data
+
+
+def change_frequency(params, value):
+    new_params = [[0 for i in range(3)] for j in range(len(params))]
+
+    for i in range(0, len(params)):
+        new_params[i][0] = params[i][0] * value
+        new_params[i][1] = params[i][1]
+        new_params[i][2] = params[i][2]
+
+    return new_params

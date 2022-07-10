@@ -65,8 +65,18 @@ params_note_basson = extract_params(fft_note_basson, fs, 400, 3)
 # plt.show()
 # ######################
 
+# --- Generate other notes
+params_note_RE = change_frequency(params_note_LA, 0.667)
+params_note_MI = change_frequency(params_note_LA, 0.749)
+params_note_FA = change_frequency(params_note_LA, 0.794)
+params_note_SOL = change_frequency(params_note_LA, 0.891)
+
 # --- Synthesize signal
 synth_note_LA = synthesize(params_note_LA, fft_note_LA.size, fs)
+synth_note_RE = synthesize(params_note_RE, fft_note_LA.size, fs)
+synth_note_MI = synthesize(params_note_MI, fft_note_LA.size, fs)
+synth_note_FA = synthesize(params_note_FA, fft_note_LA.size, fs)
+synth_note_SOL = synthesize(params_note_SOL, fft_note_LA.size, fs)
 synth_note_basson = synthesize(params_note_basson, fft_note_basson.size, fs)
 # ######################
 # plt.subplot(2, 1, 1)
@@ -78,17 +88,38 @@ synth_note_basson = synthesize(params_note_basson, fft_note_basson.size, fs)
 
 # --- Multiply by envelop
 synth_note_LA *= env_note_LA[0:synth_note_LA.size]
+synth_note_RE *= env_note_LA[0:synth_note_RE.size]
+synth_note_MI *= env_note_LA[0:synth_note_MI.size]
+synth_note_FA *= env_note_LA[0:synth_note_FA.size]
+synth_note_SOL *= env_note_LA[0:synth_note_SOL.size]
 synth_note_basson *= env_note_basson[0:synth_note_basson.size]
-# ######################
-# plt.subplot(2, 1, 1)
-# plt.plot(synth_note_LA)
-# plt.subplot(2, 1, 2)
-# plt.plot(synth_note_basson)
-# plt.show()
-# ######################
+######################
+plt.subplot(2, 1, 1)
+plt.plot(synth_note_LA)
+plt.subplot(2, 1, 2)
+plt.plot(synth_note_basson)
+plt.show()
+######################
 
-# --- Create audio file
+# --- Generate Beethoven
+beg = 6800
+div = 10
+bet = synth_note_SOL[beg:int(synth_note_SOL.size/div)]
+bet = np.concatenate([bet, synth_note_SOL[beg:int(synth_note_SOL.size/div)]])
+bet = np.concatenate([bet, synth_note_SOL[beg:int(synth_note_SOL.size/div)]])
+bet = np.concatenate([bet, synth_note_MI[beg:int(synth_note_MI.size/1.25)]])
+bet = np.concatenate([bet, synth_note_FA[beg:int(synth_note_FA.size/div)]])
+bet = np.concatenate([bet, synth_note_FA[beg:int(synth_note_FA.size/div)]])
+bet = np.concatenate([bet, synth_note_FA[beg:int(synth_note_FA.size/div)]])
+bet = np.concatenate([bet, synth_note_RE[beg:int(synth_note_RE.size/1.25)]])
+
+# --- Create audio files
+sf.write("bet.wav", data=bet.real, samplerate=fs)
 sf.write("synth_note_LA.wav", data=synth_note_LA.real, samplerate=fs)
+sf.write("synth_note_RE.wav", data=synth_note_RE.real, samplerate=fs)
+sf.write("synth_note_MI.wav", data=synth_note_MI.real, samplerate=fs)
+sf.write("synth_note_FA.wav", data=synth_note_FA.real, samplerate=fs)
+sf.write("synth_note_SOL.wav", data=synth_note_SOL.real, samplerate=fs)
 sf.write("synth_note_basson.wav", data=synth_note_basson.real, samplerate=fs)
 
 # --- Plot signals
