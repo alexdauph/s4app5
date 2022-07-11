@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 def fir_low_pass_filter(fc, fs, order):
@@ -25,5 +26,25 @@ def fir_band_stop_filter(fc, fs, order, low_pass_filter):
 
     return band_stop_filter
 
+
+def fir_1000hz_response(fff):
+    f = 1000
+    nb_periods = 3
+
+    t = np.arange(0, nb_periods / f, 1 / f / 10000)
+    x = np.arange(0, t.size)/t.size * nb_periods * 1/f
+    wave = np.sin(2 * np.pi * 1000 * t)
+
+    conv = np.convolve(wave, np.arange(0, 10))
+
+    plt.subplot(3, 1, 1)
+    plt.plot(x, wave)
+    plt.subplot(3, 1, 2)
+    plt.plot(fff)
+    plt.subplot(3, 1, 3)
+    plt.plot(x, conv[0:x.size])
+    plt.show()
+
+    return wave
 
 

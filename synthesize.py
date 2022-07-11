@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 from scipy.signal import find_peaks
 
 
@@ -54,3 +55,29 @@ def change_frequency(params, value):
         new_params[i][2] = params[i][2]
 
     return new_params
+
+
+def freq_response():
+    N = 442
+    K = 2 * N + 1
+
+    w = np.arange(0, 0.04, 0.00001)
+    #w = 2 * np.pi * m / N * 44100
+
+    X = 1/K * np.sin(w * K/2) / np.sin(w / 2)
+    X[0] = 1 + 1/K
+    plt.plot(w, 20 * np.log10(abs(X)), color="black")
+    plt.xlim(0, 0.04)
+    plt.xlabel("|H(w)| (rad/éch)")
+    plt.ylabel("Gain (dB)")
+    plt.title("Réponse en fréquence de la moyenne mobile")
+
+    plt.plot(np.pi/1000, -3, marker='o', color='black')
+    plt.text(np.pi/1000+0.0003, -3, "(pi/1000, -3)")
+
+    plt.axhline(y=-13, color='gray', linestyle='--', linewidth=1.0)
+    for i in range(1, 6):
+        plt.axvline(x=i*(2*np.pi/K), color='gray', linestyle='--', linewidth=1.0)
+
+    plt.show()
+
